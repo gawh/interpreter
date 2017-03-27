@@ -12,7 +12,7 @@ Python 2 or 3
 Usage
 -----
 
-In a Windows command prompt, or a Linux/MacOSX terminal, enter the following command:
+In a Windows command prompt, or a Linux/MacOSX terminal, enter the following command:  
   python interpeter.py filename
 
 For example:  python interpreter.py example.rom  reads the contents of the file "example.rom" as machinecode, and executes it.
@@ -69,6 +69,6 @@ There are multiple flags that can be used to execute this program:
 
     After execution of the machinecode, the RAM layout is displayed.
 
-These flags can be used simultaneously. For example:
-  python interpreter.py -m 2048 -sm example.rom
+These flags can be used simultaneously. For example:  
+  python interpreter.py -m 2048 -sm example.rom  
   python interpreter.py -av example.asm
