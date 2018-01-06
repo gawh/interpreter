@@ -1,5 +1,5 @@
 
-Interpreter for the machinecode of the RUN1617 CPU, by the Radboud University
+Interpreter for the machinecode of the RUN1718 CPU, by the Radboud University
 Nijmegen. Based on assembly and machinecode by David N. Jansen.
 
 
@@ -38,7 +38,7 @@ There are multiple flags that can be used to execute this program:
       python interpreter.py --assemble filename
 
     Interprets the file as assembly code instead of machinecode, and translates the assembly to machinecode using the
-    RUN1617 assembler ("assembler.exe" for Windows, "assembler_linux" for Linux and "assembler_osx" for MacOSX).
+    RUN1718 assembler ("assembler.exe" for Windows, "assembler_linux" for Linux and "assembler_mac" for MacOSX).
 
     For example:  python interpreter.py -a example.asm  assembles the file "example.asm" using the correct assembler for the
     user's operating system. The output file, which will be "example.rom", is then read and executed.

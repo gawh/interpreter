@@ -130,7 +130,7 @@ def get_assembler():
         return 'assembler.exe'
 
 parser = argparse.ArgumentParser(description="""
-Interpreter for the machinecode of the RUN1617 CPU, by the Radboud University
+Interpreter for the machinecode of the RUN1718 CPU, by the Radboud University
 Nijmegen.
 Based on assembly and machinecode by David N. Jansen.
 """)
