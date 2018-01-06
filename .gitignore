@@ -1,0 +1,7 @@
+#  IDE
+.idea/
+__pycache__/
+
+# Assembly and machinecode files
+*.asm
+*.rom
