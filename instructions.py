@@ -12,6 +12,11 @@ class Instruction(object):
     def get_condition(self):
         return self.condition
 
+    def get_conditional_name(self, base_name):
+        if self.condition == 15:
+            return base_name
+        return '{}.{}'.format(base_name, condition_by_name(self.condition))
+
     def execute(self, pc):
         pass
 
@@ -19,9 +24,7 @@ class Instruction(object):
 class Halt(Instruction):
 
     def __str__(self):
-        if self.condition == 15:
-            return 'HALT'
-        return 'HALT.{}'.format(condition_by_name(self.condition))
+        return self.get_conditional_name('HALT')
 
     def execute(self, pc):
         pc.halt()
@@ -36,10 +39,7 @@ class Read(Instruction):
         self.reg_d = reg_d
 
     def __str__(self):
-        if self.condition == 15:
-            base = 'READ'
-        else:
-            base = 'READ.{}'.format(condition_by_name(self.condition))
+        base = self.get_conditional_name('READ')
 
         if self.offset and self.reg_a:
             src = '[R{} + 0x{:x}]'.format(self.reg_a, 0xffffffff & self.offset)
@@ -68,10 +68,7 @@ class Write(Instruction):
         self.reg_b = reg_b
 
     def __str__(self):
-        if self.condition == 15:
-            base = 'WRITE'
-        else:
-            base = 'WRITE.{}'.format(condition_by_name(self.condition))
+        base = self.get_conditional_name('WRITE')
 
         if self.offset and self.reg_a:
             src = '[R{} + 0x{:x}]'.format(self.reg_a, 0xffffffff & self.offset)
@@ -101,10 +98,7 @@ class Push(Instruction):
         self.reg_a = reg_a
 
     def __str__(self):
-        if self.condition == 15:
-            base = 'PUSH'
-        else:
-            base = 'PUSH.{}'.format(condition_by_name(self.condition))
+        base = self.get_conditional_name('PUSH')
 
         return '{:<10}R{}'.format(base, self.reg_a)
 
@@ -123,10 +117,7 @@ class Pop(Instruction):
         self.reg_d = reg_d
 
     def __str__(self):
-        if self.condition == 15:
-            base = 'POP'
-        else:
-            base = 'POP.{}'.format(condition_by_name(self.condition))
+        base = self.get_conditional_name('POP')
 
         return '{:<10}R{}'.format(base, self.reg_d)
 
@@ -146,10 +137,7 @@ class LoadHi(Instruction):
         self.reg_d = reg_d
 
     def __str__(self):
-        if self.condition == 15:
-            base = 'LOADHI'
-        else:
-            base = 'LOADHI.{}'.format(condition_by_name(self.condition))
+        base = self.get_conditional_name('LOADHI')
 
         return '{:<10}0x{:x}, R{}'.format(base, self.constant, self.reg_d)
 
@@ -176,8 +164,7 @@ class Arith(Instruction):
         base = self.names[self.opcode]
         if self.flag:
             base += 'f'
-        if self.condition != 15:
-            base += '.' + condition_by_name(self.condition)
+        base = self.get_conditional_name(base)
 
         if self.no_constant:
             src = 'R{}'.format(self.reg_a)

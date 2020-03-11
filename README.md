@@ -1,7 +1,7 @@
 
-Interpreter for the machinecode of the RUN1718 CPU, by the Radboud University
-Nijmegen. Based on assembly and machinecode by David N. Jansen.
+Interpreter for the machinecode of the RUN1920 CPU, by the Radboud University Nijmegen. Based on assembly and machinecode by David N. Jansen.
 
+Interpreter source code can be found on [GitHub](https://github.com/gijshendriksen/interpreter/).
 
 Requirements
 ------------
@@ -12,10 +12,11 @@ Python 2 or 3
 Usage
 -----
 
-In a Windows command prompt, or a Linux/MacOSX terminal, enter the following command:  
+In a Windows command prompt, or a Linux/MacOSX terminal, enter the following command:
+
     python interpeter.py filename
 
-For example:  python interpreter.py example.rom  reads the contents of the file "example.rom" as machinecode, and executes it.
+For example:  `python interpreter.py example.rom`  reads the contents of the file "example.rom" as machinecode, and executes it.
 
 
 Flags
@@ -37,8 +38,8 @@ There are multiple flags that can be used to execute this program:
         or 
       python interpreter.py --assemble filename
 
-    Interprets the file as assembly code instead of machinecode, and translates the assembly to machinecode using the
-    RUN1718 assembler ("assembler.exe" for Windows, "assembler_linux" for Linux and "assembler_mac" for MacOSX).
+    Interprets the file as assembly code instead of machinecode, and translates the assembly to machinecode using the RUN1920
+    assembler ("bin/windows/assembler.exe" for Windows, "bin/linux/assembler" for Linux and "bin/macos/assembler" for MacOSX).
 
     For example:  python interpreter.py -a example.asm  assembles the file "example.asm" using the correct assembler for the
     user's operating system. The output file, which will be "example.rom", is then read and executed.
@@ -69,6 +70,7 @@ There are multiple flags that can be used to execute this program:
 
     After execution of the machinecode, the RAM layout is displayed.
 
-These flags can be used simultaneously. For example:  
+These flags can be used simultaneously. For example:
+
     python interpreter.py -m 2048 -sm example.rom  
     python interpreter.py -av example.asm

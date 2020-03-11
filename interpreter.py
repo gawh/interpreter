@@ -17,23 +17,19 @@ class Computer:
 
     def read_memory_file(self, file):
         with open(file) as input_file:
-            machine_code = input_file.readlines()
+            # The assembler includes the version as the first line
+            machine_code = input_file.readlines()[1:]
 
-        if (len(machine_code) * 4 > len(self.memory)):
-            print('[!] WARNING: Machinecode does not fit in memory!');
-            print('[!] Adjusting memory size to fit machinecode...');
+        if len(machine_code) * 4 > len(self.memory):
+            print('[!] WARNING: Machinecode does not fit in memory!')
+            print('[!] Adjusting memory size to fit machinecode...')
             self.memory += [0 for _ in range(len(machine_code) * 4 - len(self.memory))]
             self.set_reg(14, len(self.memory))
 
+        for address, instruction in enumerate(machine_code):
+            data = int(instruction.strip(), 16)
 
-        for instruction in machine_code:
-            address = 4 * int(instruction.split(':')[0], 16)
-            data = int(instruction.split(':')[1][:-1], 16)
-
-            self.memory[address] = (data >> 24) & 0xff
-            self.memory[address + 1] = (data >> 16) & 0xff
-            self.memory[address + 2] = (data >> 8) & 0xff
-            self.memory[address + 3] = data & 0xff
+            self.write_memory(4 * address, data)
 
     def print_memory(self):
         print('\n' + '-'*44)
@@ -63,6 +59,11 @@ class Computer:
         return res
 
     def write_memory(self, address, data):
+        if address & 3:
+            print('\n[!] Invalid memory address: 0x{:08x}'.format(address))
+            print('[!] Shutting down processor...')
+            exit()
+
         self.memory[address] = (data >> 24) & 0xff
         self.memory[address + 1] = (data >> 16) & 0xff
         self.memory[address + 2] = (data >> 8) & 0xff
@@ -123,21 +124,22 @@ class Computer:
 
 def get_assembler():
     if sys.platform.startswith('linux'):
-        return './assembler_linux'
+        return 'bin/linux/assembler'
     elif sys.platform == 'darwin':
-        return './assembler_osx'
+        return 'bin/macos/assembler'
     else:
-        return 'assembler.exe'
+        return 'bin/windows/assembler.exe'
+
 
 parser = argparse.ArgumentParser(description="""
-Interpreter for the machinecode of the RUN1718 CPU, by the Radboud University
+Interpreter for the machinecode of the RUN1920 CPU, by the Radboud University
 Nijmegen.
 Based on assembly and machinecode by David N. Jansen.
 """)
 
 parser.add_argument('filename', help='The filename of the machinecode')
 parser.add_argument('-m', '--memory', default=2**10, type=int,
-                    help='The size of the RAM in 4-byte words (standard=1024)')
+                    help='The size of the RAM in 4-byte words (default=1024)')
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='Print the executed assembly instructions')
 parser.add_argument('-sm', '--show-memory', action='store_true',
@@ -162,12 +164,12 @@ if args.assemble:
     _, err = p.communicate()
 
     if p.returncode != 0:
-        print(err)
+        print(err.decode('utf-8'))
         exit()
 
     print('[!] File assembled successfully!')
 
-    filename = os.path.splitext(args.filename)[0] + '.rom'
+    filename = os.path.splitext(args.filename)[0] + '.hex'
 else:
     filename = args.filename
 
