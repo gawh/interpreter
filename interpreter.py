@@ -35,11 +35,15 @@ class Computer:
         print('\n' + '-'*44)
         for i in range(0, len(self.memory), 4):
             print(('| 0x{:08x}  | ' + ' 0x{:02x} |' * 4).format(
-                i >> 2,
+                i,
                 self.memory[i], self.memory[i + 1],
                 self.memory[i + 2], self.memory[i + 3])
             )
         print('-' * 44)
+
+    def print_registers(self):
+        for i in range(16):
+            print('R{:<2d} = 0x{:08x} ({:d})'.format(i, self.registers[i], self.registers[i]))
 
     def get_reg(self, reg):
         return self.registers[reg]
@@ -144,6 +148,8 @@ parser.add_argument('-v', '--verbose', action='store_true',
                     help='Print the executed assembly instructions')
 parser.add_argument('-sm', '--show-memory', action='store_true',
                     help='Print the RAM memory after execution')
+parser.add_argument('-sr', '--show-registers', action='store_true',
+                    help='Print the registers after execution')
 parser.add_argument('-a', '--assemble', action='store_true',
                     help='Assemble the inputfile first (requires assembler)')
 
@@ -179,3 +185,6 @@ cmp.run()
 
 if args.show_memory:
     cmp.print_memory()
+
+if args.show_registers:
+    cmp.print_registers()
