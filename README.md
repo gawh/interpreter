@@ -16,7 +16,7 @@ In a Windows command prompt, or a Linux/MacOSX terminal, enter the following com
 
     python interpeter.py filename
 
-For example:  `python interpreter.py example.rom`  reads the contents of the file "example.rom" as machinecode, and executes it.
+For example:  `python interpreter.py example.hex`  reads the contents of the file "example.hex" as machinecode, and executes it.
 
 
 Flags
@@ -42,7 +42,7 @@ There are multiple flags that can be used to execute this program:
     assembler ("bin/windows/assembler.exe" for Windows, "bin/linux/assembler" for Linux and "bin/macos/assembler" for MacOSX).
 
     For example:  python interpreter.py -a example.asm  assembles the file "example.asm" using the correct assembler for the
-    user's operating system. The output file, which will be "example.rom", is then read and executed.
+    user's operating system. The output file, which will be "example.hex", is then read and executed.
 
     If the assembly fails, the assembler's error message will be displayed.
 
@@ -70,7 +70,13 @@ There are multiple flags that can be used to execute this program:
 
     After execution of the machinecode, the RAM layout is displayed.
 
+
+    -sr, --show-registers:
+       python interpreter.py -sr filename
+
+    After execution of the machinecode, the registers are displayed.
+
 These flags can be used simultaneously. For example:
 
-    python interpreter.py -m 2048 -sm example.rom  
+    python interpreter.py -m 2048 -sm example.hex  
     python interpreter.py -av example.asm
