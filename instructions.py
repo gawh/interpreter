@@ -1,6 +1,3 @@
-import sys
-
-
 class Instruction(object):
 
     def __init__(self, condition):
@@ -52,10 +49,7 @@ class Read(Instruction):
     def execute(self, pc):
         address = pc.get_reg(self.reg_a) + self.offset
 
-        if address == -512:
-            data = ord(sys.stdin.read(1))
-        else:
-            data = pc.read_memory(address)
+        data = pc.read_memory(address)
         pc.set_reg(self.reg_d, data)
 
 
@@ -82,13 +76,7 @@ class Write(Instruction):
         address = pc.get_reg(self.reg_a) + self.offset
         data = pc.get_reg(self.reg_b)
 
-        if address == -512:
-            if pc.is_verbose():
-                print('\n[!] Output: {}\n'.format(chr(data)))
-            else:
-                sys.stdout.write(chr(data))
-        else:
-            pc.write_memory(address, data)
+        pc.write_memory(address, data)
 
 
 class Push(Instruction):

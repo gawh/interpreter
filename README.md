@@ -80,3 +80,22 @@ These flags can be used simultaneously. For example:
 
     python interpreter.py -m 2048 -sm example.hex  
     python interpreter.py -av example.asm
+
+
+Keyboard
+--------
+
+The interpreter's standard behaviour of reading keyboard input from address `[-512]` is done by reading inputs from
+`stdin`. However, this input does not register until the user has pressed the Enter key, which generally makes it hard
+to read real-time input from the keyboard.
+
+The interpreter also supports real-time user input, if the python module `getkey` is installed:
+
+    pip install getkey
+
+In this advanced behaviour, the interpreter keeps track of a buffer of keyboard inputs. Whenever we read from address
+`[-512]` using assembly, the first value of this buffer is returned and removed from the buffer. If the buffer is empty,
+the value 0 will be returned.
+
+If the `getkey` module is installed, the interpreter will automatically use this advanced method of reading keyboard
+input.
