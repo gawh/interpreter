@@ -1,12 +1,14 @@
 from instructions import *
+from keyboard import *
 import argparse
-import subprocess
 import os
+import subprocess
+import sys
 
 
 class Computer:
-
-    def __init__(self, mem_size, verbose):
+    def __init__(self, keyboard, mem_size, verbose):
+        self.keyboard = keyboard
         self.registers = [0 for _ in range(16)]
         self.set_reg(14, mem_size * 4)
         self.memory = [0 for _ in range(mem_size * 4)]
@@ -52,26 +54,46 @@ class Computer:
         if reg > 0:
             self.registers[reg] = value
 
-    def read_memory(self, address):
+    def assert_valid_address(self, address):
         if address & 3:
             print('\n[!] Invalid memory address: 0x{:08x}'.format(address))
             print('[!] Shutting down processor...')
-            exit()
+            self.halt()
+            return False
+        elif address + 3 >= len(self.memory):
+            print('\n[!] Memory address out of range: 0x{:08x}'.format(address))
+            print('[!] Shutting down processor...')
+            self.halt()
+            return False
+        return True
 
-        res = (self.memory[address] << 24) + (self.memory[address + 1] << 16)
-        res += (self.memory[address + 2] << 8) + (self.memory[address + 3])
-        return res
+    def read_memory(self, address):
+        if not self.assert_valid_address(address):
+            return
+
+        if address == -512:
+            data = self.keyboard.read_character()
+        else:
+            data = (self.memory[address] << 24) + (self.memory[address + 1] << 16)
+            data += (self.memory[address + 2] << 8) + (self.memory[address + 3])
+
+        return data
 
     def write_memory(self, address, data):
-        if address & 3:
-            print('\n[!] Invalid memory address: 0x{:08x}'.format(address))
-            print('[!] Shutting down processor...')
-            exit()
+        if not self.assert_valid_address(address):
+            return
 
-        self.memory[address] = (data >> 24) & 0xff
-        self.memory[address + 1] = (data >> 16) & 0xff
-        self.memory[address + 2] = (data >> 8) & 0xff
-        self.memory[address + 3] = data & 0xff
+        if address == -512:
+            if self.is_verbose():
+                print('\n[!] Output: {}\n'.format(chr(data)))
+            else:
+                sys.stdout.write(chr(data))
+                sys.stdout.flush()
+        else:
+            self.memory[address] = (data >> 24) & 0xff
+            self.memory[address + 1] = (data >> 16) & 0xff
+            self.memory[address + 2] = (data >> 8) & 0xff
+            self.memory[address + 3] = data & 0xff
 
     def set_flags(self, n, z, c, o):
         self.flags['N'] = n
@@ -87,7 +109,8 @@ class Computer:
             print('\n[!] Useless operation OR 0, R0, R0 found.')
             print('[!] Did you forget to include a HALT instruction?')
             print('[!] Shutting down processor...')
-            exit()
+            self.halt()
+            return
 
         self.instruction = get_instruction(instr)
         self.set_reg(15, pc + 4)
@@ -152,6 +175,8 @@ parser.add_argument('-sr', '--show-registers', action='store_true',
                     help='Print the registers after execution')
 parser.add_argument('-a', '--assemble', action='store_true',
                     help='Assemble the inputfile first (requires assembler)')
+parser.add_argument('-k', '--keyboard', action='store_true',
+                    help='Use advanced keyboard input (requires `getkey`)')
 
 args = parser.parse_args()
 
@@ -179,9 +204,25 @@ if args.assemble:
 else:
     filename = args.filename
 
-cmp = Computer(args.memory, args.verbose)
+if args.keyboard and KEYBOARD_ENABLED:
+    keyboard = Keyboard()
+    keyboard.start()
+elif args.keyboard:
+    print('[!] Advanced keyboard behaviour not supported!')
+    print('[!] Falling back to default input...')
+    keyboard = BaseKeyboard()
+else:
+    keyboard = BaseKeyboard()
+
+
+cmp = Computer(keyboard, args.memory, args.verbose)
 cmp.read_memory_file(filename)
-cmp.run()
+
+try:
+    cmp.run()
+except KeyboardInterrupt:
+    print('[!] Processor interrupted!')
+    cmp.halt()
 
 if args.show_memory:
     cmp.print_memory()
