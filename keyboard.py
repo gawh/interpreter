@@ -7,13 +7,7 @@ except ImportError:
     getkey = None
 
 
-def get_keyboard():
-    if getkey is None:
-        return BaseKeyboard()
-
-    keyboard = Keyboard()
-    keyboard.start()
-    return keyboard
+KEYBOARD_ENABLED = getkey is not None
 
 
 class BaseKeyboard:

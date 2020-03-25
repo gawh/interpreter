@@ -1,5 +1,5 @@
 from instructions import *
-from keyboard import get_keyboard
+from keyboard import *
 import argparse
 import os
 import subprocess
@@ -7,9 +7,8 @@ import sys
 
 
 class Computer:
-    def __init__(self, mem_size, verbose):
-        self.keyboard = get_keyboard()
-
+    def __init__(self, keyboard, mem_size, verbose):
+        self.keyboard = keyboard
         self.registers = [0 for _ in range(16)]
         self.set_reg(14, mem_size * 4)
         self.memory = [0 for _ in range(mem_size * 4)]
@@ -176,6 +175,8 @@ parser.add_argument('-sr', '--show-registers', action='store_true',
                     help='Print the registers after execution')
 parser.add_argument('-a', '--assemble', action='store_true',
                     help='Assemble the inputfile first (requires assembler)')
+parser.add_argument('-k', '--keyboard', action='store_true',
+                    help='Use advanced keyboard input (requires `getkey`)')
 
 args = parser.parse_args()
 
@@ -203,7 +204,18 @@ if args.assemble:
 else:
     filename = args.filename
 
-cmp = Computer(args.memory, args.verbose)
+if args.keyboard and KEYBOARD_ENABLED:
+    keyboard = Keyboard()
+    keyboard.start()
+elif args.keyboard:
+    print('[!] Advanced keyboard behaviour not supported!')
+    print('[!] Falling back to default input...')
+    keyboard = BaseKeyboard()
+else:
+    keyboard = BaseKeyboard()
+
+
+cmp = Computer(keyboard, args.memory, args.verbose)
 cmp.read_memory_file(filename)
 
 try:

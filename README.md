@@ -72,9 +72,19 @@ There are multiple flags that can be used to execute this program:
 
 
     -sr, --show-registers:
-       python interpreter.py -sr filename
+      python interpreter.py -sr filename
+        or
+      python interpreter.py --show-registers filename
 
     After execution of the machinecode, the registers are displayed.
+
+    -k, --keyboard:
+      python interpreter.py -k filename
+        or
+      python interpreter.py --keyboard filename
+
+    Enables advanced keyboard behaviour, in which keystrokes are read to an internal buffer
+    instead of reading from stdin. See also the Keyboard section below.
 
 These flags can be used simultaneously. For example:
 
@@ -97,5 +107,5 @@ In this advanced behaviour, the interpreter keeps track of a buffer of keyboard 
 `[-512]` using assembly, the first value of this buffer is returned and removed from the buffer. If the buffer is empty,
 the value 0 will be returned.
 
-If the `getkey` module is installed, the interpreter will automatically use this advanced method of reading keyboard
-input.
+This advanced keyboard behaviour will be enabled if the `getkey` module is installed, and the `--keyboard` flag is
+passed.
